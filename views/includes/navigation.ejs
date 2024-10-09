@@ -4,20 +4,24 @@
   <nav class="main-header__nav">
     <ul class="main-header__item-list">
       <li class="main-header__item">
-        <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+        <a class="<%= path === '/shop' ? 'active' : '' %>" href="/shop"
+          ><i class="fas fa-store"></i>Shop</a
+        >
       </li>
       <li class="main-header__item">
         <a class="<%= path === '/products' ? 'active' : '' %>" href="/products"
-          >Products</a
+          ><i class="fas fa-box"></i>Products</a
         >
       </li>
       <% if (isAuthenticated) { %>
       <li class="main-header__item">
-        <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+        <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart"
+          ><i class="fas fa-shopping-cart"></i>Cart</a
+        >
       </li>
       <li class="main-header__item">
         <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders"
-          >Orders</a
+          ><i class="fas fa-file-invoice-dollar"></i>Orders</a
         >
       </li>
       <li class="main-header__item">
@@ -42,21 +46,23 @@
         <a
           class="<%= path === '/users/login' ? 'active' : '' %>"
           href="/users/login"
-          >Login</a
+          ><i class="fas fa-sign-in-alt"></i>Login</a
         >
       </li>
       <li class="main-header__item">
         <a
           class="<%= path === '/users/signup' ? 'active' : '' %>"
           href="/users/signup"
-          >Signup</a
+          ><i class="fas fa-user-plus"></i>Signup</a
         >
       </li>
       <% } else { %>
       <li class="main-header__item">
         <form action="/users/logout" method="post">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
-          <button type="submit">Logout</button>
+          <button type="submit">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
         </form>
       </li>
       <% } %>
@@ -67,20 +73,24 @@
 <nav class="mobile-nav">
   <ul class="mobile-nav__item-list">
     <li class="mobile-nav__item">
-      <a class="<%= path === '/' ? 'active' : '' %>" href="/">Shop</a>
+      <a class="<%= path === '/shop' ? 'active' : '' %>" href="/shop"
+        ><i class="fas fa-store"></i>Shop</a
+      >
     </li>
     <li class="mobile-nav__item">
       <a class="<%= path === '/products' ? 'active' : '' %>" href="/products"
-        >Products</a
+        ><i class="fas fa-box"></i>Products</a
       >
     </li>
     <% if (isAuthenticated) { %>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart">Cart</a>
+      <a class="<%= path === '/cart' ? 'active' : '' %>" href="/cart"
+        ><i class="fas fa-shopping-cart"></i>Cart</a
+      >
     </li>
     <li class="mobile-nav__item">
       <a class="<%= path === '/orders' ? 'active' : '' %>" href="/orders"
-        >Orders</a
+        ><i class="fas fa-file-invoice-dollar"></i>Orders</a
       >
     </li>
     <li class="mobile-nav__item">
@@ -99,21 +109,23 @@
     </li>
     <% } %> <% if (!isAuthenticated) { %>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/login' ? 'active' : '' %>" href="/login"
-        >Login</a
+      <a class="<%= path === '/users/login' ? 'active' : '' %>" href="/login"
+        ><i class="fas fa-sign-in-alt"></i>Login</a
       >
     </li>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/signup' ? 'active' : '' %>" href="/signup"
-        >Signup</a
+      <a class="<%= path === '/users/signup' ? 'active' : '' %>" href="/signup"
+        ><i class="fas fa-user-plus"></i>Signup</a
       >
     </li>
     <% } else { %>
     <li class="mobile-nav__item">
-      <form action="/logout" method="post">
+      <form action="/users/logout" method="post">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}" />
 
-        <button type="submit">Logout</button>
+        <button type="submit">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
       </form>
     </li>
     <% } %>

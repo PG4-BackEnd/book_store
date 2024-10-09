@@ -13,10 +13,9 @@
         <% } %>
         <div class = "centered">
             <h1>로그인</h1>
-            <p>계정이 없으신가요? <a href="signup" >회원가입 하러가기</a></p>
         </div>
         
-        <form class="login-form" action="/login" method="POST">
+        <form class="login-form" action="/users/login" method="POST">
             <div class="form-control">
                 <label for="email">E-mail</label>
                 <input class="<%= validationErrors.find(e=> e.param === 'email') ? 'invalid' : '' %>"
@@ -33,7 +32,9 @@
         </form>
         <div class="centered">
             <br />
-            <a href="/reset">비밀번호 재설정</a>
+            <a href="/users/reset">비밀번호 재설정</a>
+            <span class="divider"></span>
+            <a href="/users/signup" >회원가입</a>
         </div>
 
         <div class="or-divider">
