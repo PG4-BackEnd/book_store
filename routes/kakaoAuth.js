@@ -3,27 +3,55 @@ const router = express.Router();
 const qs = require("qs"); //query string
 const axios = require("axios"); //axios는 HTTP 요청을 보내기 위한 라이브러리 ,Promise 기반이기 때문에 비동기 처리를 쉽게함
 
-const port = process.env.PORT || 4000;
-const client_id = process.env.CLIENT_ID; //rest api key
-const redirect_uri = "http://localhost:4000/oauth/redirect";
-const token_uri = "https://kauth.kakao.com/oauth/token";
-const api_host = "https://kapi.kakao.com";
-const client_secret = "";
-const origin = "http://localhost:4000";
+const {
+  kakaoClientID,
+  kakaoClientSecret,
+  MONGODB_URI,
+  redirect_uri,
+  token_uri,
+  api_host,
+  origin,
+} = require("../config/prod");
+
+// const port = process.env.PORT || 4000;
+// const client_id = process.env.CLIENT_ID; //rest api key
+// const redirect_uri = "http://localhost:4000/oauth/redirect";
+// const token_uri = "https://kauth.kakao.com/oauth/token";
+// const api_host = "https://kapi.kakao.com";
+// const client_secret = "";
+// const origin = "http://localhost:4000";
+//kauth.kakao.com/oauth/authorize?client_id=undefined&redirect_uri=http://localhost:4000/oauth/redirect&response_type=code
+// function REST_Call(path) {
+//   axios
+//     .get("http://localhost:4000" + path, {
+//       params: {},
+//       withCredentials: true,
+//     })
+//     .then(({ data }) => {
+//       console.log(data);
+//       $("#contents").html(JSON.stringify(data));
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//       $("#contents").html(JSON.stringify(err));
+//     });
+// }
 
 router.get("/authorize", function (req, res) {
   let { scope } = req.query;
+  console.log("scope: " + scope);
   let scopeParam = "";
   if (scope) {
     scopeParam = "&scope=" + scope;
   }
+  console.log("scopeParam: " + scopeParam);
+
   res
     .status(302)
     .redirect(
-      `https://kauth.kakao.com/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code${scopeParam}`
+      `https://kauth.kakao.com/oauth/authorize?client_id=${kakaoClientID}&redirect_uri=${redirect_uri}&response_type=code${scopeParam}`
     );
 });
-
 async function call(method, uri, param, header) {
   try {
     rtn = await axios({
@@ -38,18 +66,20 @@ async function call(method, uri, param, header) {
   return rtn.data;
 }
 
-router.get("/oauth/redirect", async function (req, res) {
+router.get("/redirect", async function (req, res) {
   const param = qs.stringify({
     grant_type: "authorization_code",
-    client_id: client_id,
+    client_id: kakaoClientID,
     redirect_uri: redirect_uri,
-    client_secret: client_secret,
+    client_secret: kakaoClientSecret,
     code: req.query.code,
   });
   const header = { "content-type": "application/x-www-form-urlencoded" };
   var rtn = await call("POST", token_uri, param, header);
+  console.log(1);
+  console.log("rtn ", rtn);
   req.session.key = rtn.access_token;
-  res.status(302).redirect(`${origin}/demo.html`);
+  res.status(302).redirect(`${origin}`);
 });
 
 router.get("/profile", async function (req, res) {
@@ -128,3 +158,5 @@ router.get("/logout", async function (req, res) {
   var rtn = await call("POST", uri, param, header);
   res.send(rtn);
 });
+
+module.exports = router;

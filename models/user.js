@@ -9,6 +9,24 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  kakaoId: {
+    type: String,
+    required: false,
+  },
+  accessToken: {
+    type: String,
+    required: false,
+  },
+  refreshToken: {
+    type: String,
+    required: false,
+  },
+  loginType: {
+    type: String,
+    enum: ["email", "kakao"],
+    required: true,
+  }, // 로그인 타입 구분
+
   resetToken: String,
   resetTokenExpiration: Date,
 

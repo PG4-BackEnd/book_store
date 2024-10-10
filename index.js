@@ -57,9 +57,11 @@ let corsOptions = {
 };
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
+const productRoutes = require("./routes/product");
 const authRoutes = require("./routes/auth");
 const errorController = require("./controllers/error");
-
+const homeRoutes = require("./routes/home");
+const kakaoAuthRoutes = require("./routes/kakaoAuth");
 // 뷰 엔진 설정
 app.set("view engine", "ejs");
 // 뷰 파일들의 디렉토리 설정
@@ -94,10 +96,12 @@ app.use((req, res, next) => {
 });
 
 //라우터 설정
+app.use("/", homeRoutes);
 app.use("/admin", adminRoutes);
 app.use("/shop", shopRoutes);
+// app.use("/products", productRoutes);
 app.use("/users", authRoutes);
-// app.use("/", home);
+app.use("/oauth", kakaoAuthRoutes);
 app.get("/500", errorController.get500);
 app.use(errorController.get404);
 mongoose

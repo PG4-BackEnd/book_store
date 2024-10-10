@@ -5,5 +5,5 @@ module.exports = {
   redirect_uri: `http://localhost:${process.env.PORT}/oauth/redirect`,
   token_uri: "https://kauth.kakao.com/oauth/token",
   api_host: "https://kapi.kakao.com",
-  origin: "http://localhost:4000",
+  origin: `http://localhost:${process.env.PORT}`,
 };
