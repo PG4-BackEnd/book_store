@@ -17,15 +17,7 @@ const csrf = require("csurf");
 dotenv.config();
 const app = express();
 const csrfProtection = csrf({ cookie: true });
-const {
-  kakaoClientID,
-  kakaoClientSecret,
-  MONGODB_URI,
-  redirect_uri,
-  token_uri,
-  api_host,
-  origin,
-} = require("./config/prod");
+const { MONGODB_URI, origin } = require("./config/prod");
 const store = new MongoDBStore({
   uri: MONGODB_URI,
   collection: "kakaoSession", //session을 저장하는 컬렉션, 이름자유
@@ -91,6 +83,7 @@ app.use(csrfProtection);
 
 app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.loginType = req.session.loginType;
   res.locals.csrfToken = req.csrfToken(true);
   next();
 });
@@ -99,7 +92,7 @@ app.use((req, res, next) => {
 app.use("/", homeRoutes);
 app.use("/admin", adminRoutes);
 app.use("/shop", shopRoutes);
-// app.use("/products", productRoutes);
+app.use("/products", productRoutes);
 app.use("/users", authRoutes);
 app.use("/oauth", kakaoAuthRoutes);
 app.get("/500", errorController.get500);

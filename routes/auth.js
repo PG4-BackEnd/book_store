@@ -40,12 +40,6 @@ router.post(
       .isEmail()
       .withMessage("Please enter a valid email")
       .custom((value, { req }) => {
-        // if (value === "test@test.com") {
-        //   throw new Error("This email address is forbidden.");
-        // }
-        // return true;
-        //custom 메서드에서 true를 반환하는 이유는 검증이 성공했음을 나타냄
-
         //비동기 유효성 검증, express validator가 데이터베이스에 접근해서 가져오는걸 기다려줌
         //userDoc은 데이터베이스에서 찾은 사용자 객체
         return User.findOne({ email: value }).then((userDoc) => {

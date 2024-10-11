@@ -1,0 +1,22 @@
+<%- include('../includes/head.ejs') %>
+<link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+   <%- include('../includes/navigation.ejs') %>
+
+   <main>
+       <div class="user-profile">
+           <h1>User Profile</h1>
+           <img src="<%= userProfile.properties.profile_image %>" alt="Profile Image">
+           <h2>Nickname: <%= userProfile.properties.nickname %></h2>
+           <h3>Connected At: <%= userProfile.connected_at %></h3>
+
+           <h4>Kakao Account Info</h4>
+           <p>Profile Nickname Needs Agreement: <%= userProfile.kakao_account.profile_nickname_needs_agreement %></p>
+           <p>Profile Image Needs Agreement: <%= userProfile.kakao_account.profile_image_needs_agreement %></p>
+
+       </div>
+   </main>
+
+   <%- include('../includes/end.ejs') %>
+</body>

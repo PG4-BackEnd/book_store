@@ -40,6 +40,7 @@
       </li>
       <% } %>
     </ul>
+
     <ul class="main-header__item-list">
       <% if (!isAuthenticated) { %>
       <li class="main-header__item">
@@ -56,7 +57,34 @@
           ><i class="fas fa-user-plus"></i>Signup</a
         >
       </li>
+      <% } else { %> <% if (loginType===`kakao`) { %>
+
+      <li class="main-header__item">
+        <form action="/oauth/profile" method="get">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button type="submit">
+            <i class="fas fa-user"></i> profile
+          </button>
+        </form>
+      </li>
+      <li class="main-header__item">
+        <form action="/oauth/message" method="get">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button type="submit">
+            <i class="fas fa-envelope"></i> message
+          </button>
+        </form>
+      </li>
+      <li class="main-header__item"></li>
+        <form action="/oauth/logout" method="post">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+          <button type="submit">
+            <i class="fas fa-sign-out-alt"></i> logout
+          </button>
+        </form>
+      </li>
       <% } else { %>
+
       <li class="main-header__item">
         <form action="/users/logout" method="post">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
@@ -65,7 +93,7 @@
           </button>
         </form>
       </li>
-      <% } %>
+      <% } %> <% } %>
     </ul>
   </nav>
 </header>
@@ -109,12 +137,16 @@
     </li>
     <% } %> <% if (!isAuthenticated) { %>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/users/login' ? 'active' : '' %>" href="/login"
+      <a
+        class="<%= path === '/users/login' ? 'active' : '' %>"
+        href="/users/login"
         ><i class="fas fa-sign-in-alt"></i>Login</a
       >
     </li>
     <li class="mobile-nav__item">
-      <a class="<%= path === '/users/signup' ? 'active' : '' %>" href="/signup"
+      <a
+        class="<%= path === '/users/signup' ? 'active' : '' %>"
+        href="/users/signup"
         ><i class="fas fa-user-plus"></i>Signup</a
       >
     </li>

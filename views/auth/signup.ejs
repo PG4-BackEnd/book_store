@@ -13,7 +13,7 @@
         <div class = "centered">
             <h1>회원가입</h1>
         </div>
-        <form class="login-form" action="/signup" method="POST">
+        <form class="login-form" action="/users/signup" method="POST">
             <div class="form-control">
                 <label for="email">E-Mail</label>
                 <input class="<%= validationErrors.find(e=> e.param === 'email') ? 'invalid' : '' %>"
