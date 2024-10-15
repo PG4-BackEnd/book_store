@@ -79,8 +79,8 @@ exports.postAddProduct = (req, res, next) => {
 
   //운영체제에 있는 파일의 경로
   const imageUrl = image.path;
-  console.log("postAddProduct imageurl", imageUrl);
-
+  // console.log("postAddProduct imageurl", imageUrl);
+  console.log("req.user", req.user);
   const product = new Product({
     // _id: mongoose.Types.ObjectId("667d098532f7f4366f2a53de"),
     title: title,

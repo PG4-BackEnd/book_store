@@ -1,15 +1,11 @@
 const Product = require("../models/product");
-const Order = require("../models/order");
-const fs = require("fs");
-const path = require("path");
-const PDFDocument = require("pdfkit");
-//여기서는 private secret key를 사용해줘야함
-const stripe = require("stripe")(
-  "sk_test_51Pd29N2MR0X41DzarcqlBngRnn5BfiWHbuNxz5G1RSG5P9PkSspmnLzyv6wx8YoKNbugyojIbmBaNTHbIt5qIBju00wcMUGUjC"
-);
 
 const ITEMS_PER_PAGE = 2;
-
+const handleServerError = (err, next) => {
+  const error = new Error(err);
+  error.httpStatusCode = 500;
+  return next(error);
+};
 exports.getProducts = (req, res, next) => {
   //+는 단항 덧셈 연산자 ,문자열을 숫자로 바꿔줌
   //||는 둘중하나가 참이면 true반환

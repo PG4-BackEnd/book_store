@@ -12,6 +12,7 @@ const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const flash = require("connect-flash");
 const csrf = require("csurf");
+const User = require("./models/user");
 
 //변수 설정
 dotenv.config();
@@ -51,9 +52,12 @@ const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const productRoutes = require("./routes/product");
 const authRoutes = require("./routes/auth");
+const cartRoutes = require("./routes/cart");
+const orderRoutes = require("./routes/order");
 const errorController = require("./controllers/error");
 const homeRoutes = require("./routes/home");
 const kakaoAuthRoutes = require("./routes/kakaoAuth");
+const checkoutRoutes = require("./routes/checkout");
 // 뷰 엔진 설정
 app.set("view engine", "ejs");
 // 뷰 파일들의 디렉토리 설정
@@ -82,6 +86,23 @@ app.use(flash());
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      if (!user) {
+        next();
+      }
+      req.user = user;
+      next();
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
+});
+
+app.use((req, res, next) => {
   res.locals.isAuthenticated = req.session.isLoggedIn;
   res.locals.loginType = req.session.loginType;
   res.locals.csrfToken = req.csrfToken(true);
@@ -90,11 +111,14 @@ app.use((req, res, next) => {
 
 //라우터 설정
 app.use("/", homeRoutes);
-app.use("/admin", adminRoutes);
-app.use("/shop", shopRoutes);
-app.use("/products", productRoutes);
 app.use("/users", authRoutes);
 app.use("/oauth", kakaoAuthRoutes);
+app.use("/admin", adminRoutes);
+app.use("/shop", shopRoutes);
+app.use("/cart", cartRoutes);
+app.use("/orders", orderRoutes);
+app.use("/products", productRoutes);
+app.use("/checkout", checkoutRoutes);
 app.get("/500", errorController.get500);
 app.use(errorController.get404);
 mongoose

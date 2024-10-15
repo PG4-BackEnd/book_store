@@ -6,4 +6,5 @@ module.exports = {
   token_uri: "https://kauth.kakao.com/oauth/token",
   api_host: "https://kapi.kakao.com",
   origin: `http://localhost:${process.env.PORT}`,
+  private_stripe_key: process.env.PRIVATE_STRIPE_KEY,
 };

@@ -47,8 +47,8 @@ async function saveUser(req, tokens) {
     headers: { Authorization: `Bearer ${tokens.access_token}` },
   });
   const kakaoUser = userInfoResponse.data;
-  console.log("Kakao user info: ", kakaoUser);
-  console.log("--------------------------------");
+  // console.log("Kakao user info: ", kakaoUser);
+  // console.log("--------------------------------");
 
   // 데이터베이스에서 사용자 확인 또는 생성
   let user = await User.findOne({ kakaoId: kakaoUser.id });
@@ -68,7 +68,7 @@ async function saveUser(req, tokens) {
     });
   } else {
     // 사용자가 있으면 토큰 업데이트
-    console.log("token updated");
+    // console.log("token updated");
     user.accessToken = tokens.access_token;
     user.refreshToken = tokens.refresh_token;
     user.accessTokenExpiresIn = new Date(Date.now() + tokens.expires_in * 1000);
@@ -79,6 +79,7 @@ async function saveUser(req, tokens) {
   await user.save();
   req.session.isLoggedIn = true;
   req.session.loginType = "kakao";
+  req.session.user = user;
   req.session.key = tokens.access_token;
   await req.session.save();
   console.log("User saved and session updated");

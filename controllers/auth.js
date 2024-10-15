@@ -19,7 +19,7 @@ exports.getLogin = (req, res, next) => {
   } else {
     message = null;
   }
-  console.log("getlogin", message);
+  // console.log("getlogin", message);
   // console.log(message);
   //console.log(isLoggedIn);
   res.render("auth/login", {
@@ -41,7 +41,7 @@ exports.getSignup = (req, res, next) => {
   } else {
     message = null;
   }
-  console.log(message);
+  // console.log(message);
 
   res.render("auth/signup", {
     path: "/users/signup",
@@ -59,7 +59,7 @@ exports.getSignup = (req, res, next) => {
 exports.postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  console.log("postlogin", email);
+  // console.log("postlogin", email);
 
   const errors = validationResult(req);
   //비어있지않으면 에러가 발생했다는거
@@ -94,8 +94,8 @@ exports.postLogin = (req, res, next) => {
           validationErrors: [],
         });
       }
-      console.log(user.email);
-      console.log(user.password);
+      // console.log(user.email);
+      // console.log(user.password);
 
       //해쉬한 비밀번호와 그냥 비밀번호를 비교한 후 promise를 반환한ㄷ
       bcrypt
@@ -123,7 +123,7 @@ exports.postLogin = (req, res, next) => {
           });
         })
         .catch((err) => {
-          console.log(err);
+          // console.log(err);
           res.redirect("/users/login");
         });
 
@@ -142,7 +142,7 @@ exports.postSignup = (req, res, next) => {
   const errors = validationResult(req);
   //비어있지않으면 에러가 발생했다는거
   if (!errors.isEmpty()) {
-    console.log(errors.array());
+    // console.log(errors.array());
     //render하므로 같은 페이지를 보여줌
     return res.status(422).render("auth/signup", {
       path: "/users/signup",
@@ -181,7 +181,7 @@ exports.postSignup = (req, res, next) => {
 
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
-    console.log(err);
+    // console.log(err);
     res.redirect("/");
   });
 };
@@ -193,7 +193,7 @@ exports.getReset = (req, res, next) => {
   } else {
     message = null;
   }
-  console.log(message);
+  // console.log(message);
 
   res.render("auth/reset", {
     path: "/reset",
@@ -205,7 +205,7 @@ exports.getReset = (req, res, next) => {
 exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
-      console.log(err);
+      // console.log(err);
       return res.redirect("/users/reset");
     }
     //buffer로 토큰생성, 버퍼가 16진법값 저장 =>hex
@@ -248,7 +248,7 @@ exports.getNewPassword = (req, res, next) => {
       } else {
         message = null;
       }
-      console.log(message);
+      // console.log(message);
 
       res.render("auth/new-password", {
         path: "/users/new-password",

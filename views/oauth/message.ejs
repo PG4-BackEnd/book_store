@@ -1,5 +1,6 @@
 <%- include('../includes/head.ejs') %>
 <link rel="stylesheet" href="/css/forms.css">
+<link rel="stylesheet" href="/css/message.css">
 
 </head>
 
@@ -7,17 +8,20 @@
     <%- include('../includes/navigation.ejs') %>
     <main>
         <div class="centered">
-            <h1>나에게 메시지 전송</h1>
+            <h1 class="message__title">나에게 메시지 전송</h1>
         </div>
-        
-        <form action="/oauth/message" method="POST">
-            <div class="form-control">
+
+        <form action="/oauth/message" method="POST" class="message-form">
+            <div class="message-item">
                 <label for="message">메시지 내용:</label>
-                <textarea name="message" id="message" rows="4" required></textarea>
+                <textarea name="message" id="message" required></textarea>
             </div>
-            <input type="hidden" name="_csrf" value="<%= csrfToken %>" /> 
-            <button class="btn" type="submit">메시지 전송</button>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+            <div class="message-item">
+                <button class="btn" type="submit">메시지 전송</button>
+            </div>
         </form>
     </main>
     <%- include('../includes/end.ejs') %>
+    <script src="/js/admin.js"></script>
 </body>

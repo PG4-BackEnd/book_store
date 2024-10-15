@@ -1,0 +1,27 @@
+.message-form {
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
+}
+
+.message-item {
+  width: 20rem;
+  max-width: 95%;
+  margin: 1rem;
+}
+
+.message__title {
+  font-size: 1.2rem;
+  text-align: center;
+}
+
+.message__price {
+  text-align: center;
+  color: #4d4d4d;
+  margin-bottom: 0.5rem;
+}
+
+.message__description {
+  text-align: center;
+}

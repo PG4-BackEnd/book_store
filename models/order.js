@@ -8,7 +8,12 @@ const orderSchema = new Schema({
     },
   ],
   user: {
-    email: { type: String, required: true },
+    email: {
+      type: String,
+      required: function () {
+        return this.loginType === "email"; // 이메일 로그인인 경우에만 필수
+      },
+    },
     userId: {
       type: Schema.Types.ObjectId,
       //ref는 문자열을 가져다가 mongoose에게 해당 필드의 데이터에

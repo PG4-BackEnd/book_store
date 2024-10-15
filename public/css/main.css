@@ -209,6 +209,7 @@ h1 {
 
 .btn {
   width: 100%;
+  max-width: 40rem;
   padding: 10px;
   margin-top: 10px;
   background-color: #333;
@@ -268,7 +269,7 @@ h1 {
 .pagination a:hover,
 .pagination a:active,
 .pagination a.active {
-  background: #00695c;
+  background: #000;
   color: white;
 }
 
