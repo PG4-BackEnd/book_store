@@ -1,12 +1,54 @@
 <%- include('./includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/slide.css">
+
 </head>
 
 <body>
     <%- include('./includes/navigation.ejs') %>
 
     <main>
-       
+   
+        <div class="slider">
+    
+            <div class="slide">
+              <div class="testimonial">
+                <h5 class="testimonial__header">컴퓨터 네트워킹 하향식 접근</h5>
+                <address class="testimonial__author">
+                  <img src="images/book-1.png" alt="책 1 이미지" class="testimonial__photo" />
+                  <h6 class="testimonial__name">최종원</h6>
+                  <p class="testimonial__location">국내</p>
+                </address>
+              </div>
+            </div>
+      
+            <div class="slide">
+              <div class="testimonial">
+                <h5 class="testimonial__header">컴퓨터 구조 및 설계</h5>
+                <address class="testimonial__author">
+                  <img src="images/book-2.png" alt="책 2 이미지" class="testimonial__photo" />
+                  <h6 class="testimonial__name">David A. Patterson, John L. Hennessy</h6>
+                  <p class="testimonial__location">해외</p>
+                </address>
+              </div>
+            </div>
+      
+
+            <div class="slide">
+              <div class="testimonial">
+                <h5 class="testimonial__header">운영체제</h5>
+                <address class="testimonial__author">
+                  <img src="images/book-3.png" alt="책 3 이미지" class="testimonial__photo" />
+                  <h6 class="testimonial__name">Abraham Silberschatz, Peter Baer Galvin, Greg Gagne</h6>
+                  <p class="testimonial__location">해외</p>
+                </address>
+              </div>
+            </div>
+      
+            <button class="slider__btn slider__btn--left">&larr;</button>
+            <button class="slider__btn slider__btn--right">&rarr;</button>
+            <div class="dots"></div>
+          </div>
     </main>
 <%- include('./includes/end.ejs') %>
 

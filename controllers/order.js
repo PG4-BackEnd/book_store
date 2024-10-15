@@ -5,22 +5,118 @@ const fs = require("fs");
 const qs = require("querystring");
 const axios = require("axios");
 
+const { origin } = require("../config/prod");
+
 const handleServerError = (err, next) => {
   const error = new Error(err);
   error.httpStatusCode = 500;
   return next(error);
+};
+
+const generateInvoice = (order) => {
+  // 파일 경로 설정
+  const invoicePath = path.join(
+    __dirname,
+    "..",
+    "data",
+    "invoices",
+    `invoice-${order._id}.pdf`
+  );
+
+  // 디렉토리가 없으면 생성
+  const invoiceDir = path.dirname(invoicePath);
+  if (!fs.existsSync(invoiceDir)) {
+    fs.mkdirSync(invoiceDir, { recursive: true }); // 중첩된 디렉토리도 생성 가능
+  }
+
+  // PDF 파일 생성
+  const pdfDoc = new PDFDocument();
+
+  pdfDoc.pipe(fs.createWriteStream(invoicePath));
+
+  // PDF 내용 작성
+  pdfDoc.fontSize(26).text("Invoice", {
+    underline: true,
+  });
+  pdfDoc.text("--------------------");
+
+  pdfDoc.text(`Invoice for Order: ${order._id}`);
+  pdfDoc.text("-----");
+  let totalPrice = 0;
+  order.products.forEach((prod) => {
+    totalPrice += prod.quantity * prod.productData.price;
+    pdfDoc
+      .fontSize(14)
+      .text(
+        prod.productData.title +
+          "-" +
+          prod.quantity +
+          "x" +
+          "$" +
+          prod.productData.price
+      );
+  });
+  pdfDoc.text(`Order Date: ${new Date().toLocaleDateString()}`);
+  pdfDoc.text("-----");
+
+  // PDF 저장 후 종료
+  pdfDoc.end();
+
+  return { invoicePath, totalPrice };
+};
+const sendKakaoMessage = async (user, order, invoicePath, totalPrice) => {
+  const kakaoApiUrl = "https://kapi.kakao.com/v2/api/talk/memo/default/send"; // 카카오 메시지 API URL
+  const accessToken = user.accessToken;
+
+  // 카카오 메시지 템플릿 내용 정의
+  const messageContent = {
+    object_type: "text",
+    text: `주문이 완료되었습니다!\n주문 번호: ${order._id}\n총 금액: ${totalPrice}$\n인보이스가 첨부되었습니다.`,
+    link: {
+      web_url: `${origin}/orders/${order._id}`,
+      mobile_web_url: `${origin}/orders/${order._id}`,
+    },
+    button_title: "주문 확인",
+  };
+
+  try {
+    // POST 요청으로 메시지 전송
+    await axios.post(
+      kakaoApiUrl,
+      {
+        template_object: JSON.stringify(messageContent), // JSON으로 변환
+      },
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${accessToken}`, // 사용자 토큰
+        },
+      }
+    );
+
+    console.log("카카오톡 메시지 전송 완료");
+
+    // PDF 인보이스 파일을 첨부하는 로직 추가
+    // console.log(`Invoice 파일 경로: ${invoicePath}`);
+  } catch (error) {
+    console.error(
+      "카카오톡 메시지 전송 실패",
+      error.response ? error.response.data : error.message
+    );
+  }
 };
 exports.postOrder = (req, res, next) => {
   req.user
     .populate("cart.items.productId")
     //.execPopulate() // execPopulate()는 populate() 메서드가 반환하는 쿼리 객체를 실행하여 Promise를 반환
     .then((user) => {
-      console.log(user.cart.items);
+      //   console.log(user.cart.items);
       //user.cart.items는 productId와 quantity 둘다있다
       const products = user.cart.items.map((i) => {
         return { quantity: i.quantity, productData: { ...i.productId._doc } };
         //: 전개 연산자(...)를 사용하여 _doc 속성의 모든 필드를 productData 객체로 복사합니다.
       });
+
       const order = new Order({
         user: {
           email: req.user.loginType === "email" ? req.user.email : undefined,
@@ -31,7 +127,14 @@ exports.postOrder = (req, res, next) => {
       });
       return order.save();
     })
-    .then((result) => {
+    .then(async (order) => {
+      //result가 promise니 여기에 있는 _id 사용
+      // 주문이 성공적으로 저장된 후 인보이스 생성
+      const { invoicePath, totalPrice } = generateInvoice(order);
+      //   console.log(invoicePath, totalPrice);
+      //카카오톡 메시지 전송
+      //   console.log("postorder", order);
+      await sendKakaoMessage(req.user, order, invoicePath, totalPrice); // 카카오톡 메시지 전송
       return req.user.clearCart();
     })
     .then(() => {
@@ -117,6 +220,7 @@ exports.getInvoice = (req, res, next) => {
       });
       pdfDoc.text("-----");
       pdfDoc.fontSize(20).text("Total Price: $" + totalPrice);
+      //   console.log("aaa", pdfDoc);
       //끝냈다고하기
       pdfDoc.end();
 
