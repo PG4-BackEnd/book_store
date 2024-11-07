@@ -56,6 +56,7 @@ const generateInvoice = (order) => {
           prod.productData.price
       );
   });
+  pdfDoc.fontSize(20).text("Total Price: $" + totalPrice);
   pdfDoc.text(`Order Date: ${new Date().toLocaleDateString()}`);
   pdfDoc.text("-----");
 

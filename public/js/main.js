@@ -1,28 +1,28 @@
-const backdrop = document.querySelector(".backdrop");
-const sideDrawer = document.querySelector(".mobile-nav");
-const menuToggle = document.querySelector("#side-menu-toggle");
+const backdrop = document.querySelector('.backdrop');
+const sideDrawer = document.querySelector('.mobile-nav');
+const menuToggle = document.querySelector('#side-menu-toggle');
 
 function backdropClickHandler() {
-  backdrop.style.display = "none";
-  sideDrawer.classList.remove("open");
+  backdrop.style.display = 'none';
+  sideDrawer.classList.remove('open');
 }
 
 function menuToggleClickHandler() {
-  backdrop.style.display = "block";
-  sideDrawer.classList.add("open");
+  backdrop.style.display = 'block';
+  sideDrawer.classList.add('open');
 }
 
-backdrop.addEventListener("click", backdropClickHandler);
-menuToggle.addEventListener("click", menuToggleClickHandler);
+backdrop.addEventListener('click', backdropClickHandler);
+menuToggle.addEventListener('click', menuToggleClickHandler);
 
 //http://localhost:4000/oauth/redirect?code=pJvygKOeGkYW9F69owZplRwBEyex2y_Ye0PqXRbyYl26I0G1qyUxrgAAAAQKPXPsAAABknS8nxcWphHJzwXJqw
 //https://kauth.kakao.com/oauth/authorize?client_id==%20%22329ca7e85edc188c36d2f6d8458ad2a0%22&redirect_uri=http://localhost:4000/oauth/redirect&response_type=code
 // Slider
 const slider = function () {
-  const slides = document.querySelectorAll(".slide");
-  const btnLeft = document.querySelector(".slider__btn--left");
-  const btnRight = document.querySelector(".slider__btn--right");
-  const dotContainer = document.querySelector(".dots");
+  const slides = document.querySelectorAll('.slide');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
+  const dotContainer = document.querySelector('.dots');
 
   let curSlide = 0;
   const maxSlide = slides.length;
@@ -31,7 +31,7 @@ const slider = function () {
   const createDots = function () {
     slides.forEach(function (_, i) {
       dotContainer.insertAdjacentHTML(
-        "beforeend",
+        'beforeend',
         `<button class="dots__dot" data-slide="${i}"></button>`
       );
     });
@@ -39,12 +39,15 @@ const slider = function () {
 
   const activateDot = function (slide) {
     document
-      .querySelectorAll(".dots__dot")
-      .forEach((dot) => dot.classList.remove("dots__dot--active"));
+      .querySelectorAll('.dots__dot')
+      .forEach((dot) => dot.classList.remove('dots__dot--active'));
 
-    document
-      .querySelector(`.dots__dot[data-slide="${slide}"]`)
-      .classList.add("dots__dot--active");
+    const activeDot = document.querySelector(
+      `.dots__dot[data-slide="${slide}"]`
+    );
+    if (activeDot) {
+      activeDot.classList.add('dots__dot--active');
+    }
   };
 
   const goToSlide = function (slide) {
@@ -84,20 +87,25 @@ const slider = function () {
   init();
 
   // Event handlers
-  btnRight.addEventListener("click", nextSlide);
-  btnLeft.addEventListener("click", prevSlide);
+  if (btnRight) {
+    btnRight.addEventListener('click', nextSlide);
+  }
+  if (btnLeft) {
+    btnLeft.addEventListener('click', prevSlide);
+  }
 
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "ArrowLeft") prevSlide();
-    e.key === "ArrowRight" && nextSlide();
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') prevSlide();
+    e.key === 'ArrowRight' && nextSlide();
   });
-
-  dotContainer.addEventListener("click", function (e) {
-    if (e.target.classList.contains("dots__dot")) {
-      const { slide } = e.target.dataset;
-      goToSlide(slide);
-      activateDot(slide);
-    }
-  });
+  if (dotContainer) {
+    dotContainer.addEventListener('click', function (e) {
+      if (e.target.classList.contains('dots__dot')) {
+        const { slide } = e.target.dataset;
+        goToSlide(slide);
+        activateDot(slide);
+      }
+    });
+  }
 };
 slider();

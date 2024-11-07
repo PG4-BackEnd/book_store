@@ -1,19 +1,31 @@
-const crypto = require("crypto"); //무작위값생성해주는거
-const bcrypt = require("bcryptjs");
-const User = require("../models/user");
+const crypto = require('crypto'); //무작위값생성해주는거
+const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
+const User = require('../models/user');
+
+const { MONGODB_USER, ADMIN_PASSWORD } = require('../config/prod');
 
 //routes의 폴더의 auth.js에서 미들웨어가 오류 수집한다 그 결과가
 //validationResult에 저장됨
-const { validationResult } = require("express-validator");
+const { validationResult } = require('express-validator');
+const transporter = nodemailer.createTransport({
+  host: 'smtp.naver.com', // Naver의 SMTP 서버 호스트
+  service: 'naver', // 이메일 서비스 (Gmail, Yahoo 등)
+  port: 587, // SSL/TLS 포트
+  secure: false, // 보안 연결 사용
+  auth: {
+    user: `${MONGODB_USER}@naver.com`, // 발송자 이메일
+    pass: `${ADMIN_PASSWORD}`, // 발송자 이메일의 비밀번호
+  },
+});
 
 const handleServerError = (err, next) => {
   const error = new Error(err);
   error.httpStatusCode = 500;
   return next(error);
 };
-
 exports.getLogin = (req, res, next) => {
-  let message = req.flash("error");
+  let message = req.flash('error');
   if (message.length > 0) {
     message = message[0];
   } else {
@@ -22,20 +34,20 @@ exports.getLogin = (req, res, next) => {
   // console.log("getlogin", message);
   // console.log(message);
   //console.log(isLoggedIn);
-  res.render("auth/login", {
-    path: "/usrs/login",
-    pageTitle: "Login",
+  res.render('auth/login', {
+    path: '/usrs/login',
+    pageTitle: 'Login',
     errorMessage: message,
     oldInput: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     validationErrors: [],
   });
 };
 
 exports.getSignup = (req, res, next) => {
-  let message = req.flash("error");
+  let message = req.flash('error');
   if (message.length > 0) {
     message = message[0];
   } else {
@@ -43,14 +55,14 @@ exports.getSignup = (req, res, next) => {
   }
   // console.log(message);
 
-  res.render("auth/signup", {
-    path: "/users/signup",
-    pageTitle: "Signup",
+  res.render('auth/signup', {
+    path: '/users/signup',
+    pageTitle: 'Signup',
     errorMessage: message,
     oldInput: {
-      email: "",
-      password: "",
-      confirmPassword: "",
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
     validationErrors: [],
   });
@@ -64,11 +76,11 @@ exports.postLogin = (req, res, next) => {
   const errors = validationResult(req);
   //비어있지않으면 에러가 발생했다는거
   if (!errors.isEmpty()) {
-    console.log(errors.array());
+    // console.log(errors.array());
     //render하므로 같은 페이지를 보여줌
-    return res.status(422).render("auth/login", {
-      path: "/users/login",
-      pageTitle: "Login",
+    return res.status(422).render('auth/login', {
+      path: '/users/login',
+      pageTitle: 'Login',
       //array가 object Object라 제일처음거만
       errorMessage: errors.array()[0].msg,
       oldInput: {
@@ -79,14 +91,14 @@ exports.postLogin = (req, res, next) => {
     });
   }
 
-  User.findOne({ email: email, loginType: "email" })
+  User.findOne({ email: email, loginType: 'email' })
     .then((user) => {
       if (!user) {
-        return res.status(422).render("auth/login", {
-          path: "/users/login",
-          pageTitle: "Login",
+        return res.status(422).render('auth/login', {
+          path: '/users/login',
+          pageTitle: 'Login',
           //array가 object Object라 제일처음거만
-          errorMessage: "Invalid email or password",
+          errorMessage: 'Invalid email or password',
           oldInput: {
             email: email,
             password: password,
@@ -103,18 +115,18 @@ exports.postLogin = (req, res, next) => {
         .then((doMatch) => {
           if (doMatch) {
             req.session.isLoggedIn = true;
-            req.session.loginType = "email";
+            req.session.loginType = 'email';
             req.session.user = user;
             return req.session.save((err) => {
               console.log(err);
-              res.redirect("/");
+              res.redirect('/');
             });
           }
-          return res.status(422).render("auth/login", {
-            path: "/users/login",
-            pageTitle: "Login",
+          return res.status(422).render('auth/login', {
+            path: '/users/login',
+            pageTitle: 'Login',
             //array가 object Object라 제일처음거만
-            errorMessage: "Invalid email or password",
+            errorMessage: 'Invalid email or password',
             oldInput: {
               email: email,
               password: password,
@@ -124,7 +136,7 @@ exports.postLogin = (req, res, next) => {
         })
         .catch((err) => {
           // console.log(err);
-          res.redirect("/users/login");
+          res.redirect('/users/login');
         });
 
       //res.redirect("/"); //redirect는 독립적으로 실행됨 너무 일찍일어날수있음
@@ -136,17 +148,16 @@ exports.postLogin = (req, res, next) => {
 };
 
 exports.postSignup = (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
+  const { email, password, confirmPassword } = req.body;
+
   const errors = validationResult(req);
   //비어있지않으면 에러가 발생했다는거
   if (!errors.isEmpty()) {
     // console.log(errors.array());
     //render하므로 같은 페이지를 보여줌
-    return res.status(422).render("auth/signup", {
-      path: "/users/signup",
-      pageTitle: "Signup",
+    return res.status(422).render('auth/signup', {
+      path: '/users/signup',
+      pageTitle: 'Signup',
       //array가 object Object라 제일처음거만
       errorMessage: errors.array()[0].msg,
       oldInput: {
@@ -166,13 +177,26 @@ exports.postSignup = (req, res, next) => {
       const user = new User({
         email: email,
         password: hashedPassword,
-        loginType: "email",
+        loginType: 'email',
         cart: { items: [] },
       });
       return user.save();
     })
     .then((result) => {
-      res.redirect("/users/login");
+      const mailOptions = {
+        from: `${MONGODB_USER}@naver.com`, // 발송자 이메일
+        to: email, // 수신자 이메일
+        subject: '회원 가입 성공', // 이메일 제목
+        text: '회원 가입 성공!', // 이메일 본문
+      };
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error('Error sending email:', error);
+        } else {
+          console.log('Email sent:', info.response);
+        }
+      });
+      res.redirect('/users/login');
     })
     .catch((err) => {
       handleServerError(err, next);
@@ -182,12 +206,12 @@ exports.postSignup = (req, res, next) => {
 exports.postLogout = (req, res, next) => {
   req.session.destroy((err) => {
     // console.log(err);
-    res.redirect("/");
+    res.redirect('/');
   });
 };
 
 exports.getReset = (req, res, next) => {
-  let message = req.flash("error");
+  let message = req.flash('error');
   if (message.length > 0) {
     message = message[0];
   } else {
@@ -195,9 +219,9 @@ exports.getReset = (req, res, next) => {
   }
   // console.log(message);
 
-  res.render("auth/reset", {
-    path: "/reset",
-    pageTitle: "Reset Password",
+  res.render('auth/reset', {
+    path: '/reset',
+    pageTitle: 'Reset Password',
     errorMessage: message,
   });
 };
@@ -206,18 +230,18 @@ exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       // console.log(err);
-      return res.redirect("/users/reset");
+      return res.redirect('/users/reset');
     }
     //buffer로 토큰생성, 버퍼가 16진법값 저장 =>hex
-    const token = buffer.toString("hex");
+    const token = buffer.toString('hex');
     //req.body: HTTP 요청의 본문
     //일반적으로 POST, PUT, PATCH 요청에서 사용되며,
     // 클라이언트가 서버로 데이터를 보낼 때 사용
     User.findOne({ email: req.body.email })
       .then((user) => {
         if (!user) {
-          req.flash("error", "No account with that email found");
-          return res.redirect("/users/reset");
+          req.flash('error', 'No account with that email found');
+          return res.redirect('/users/reset');
         }
         user.resetToken = token;
         //ms단위로 입력되야함,  1s는 1000ms => *3600 => 1시간
@@ -225,10 +249,12 @@ exports.postReset = (req, res, next) => {
         return user.save();
       })
       .then((result) => {
-        res.redirect("/");
+        res.redirect('/');
       })
       .catch((err) => {
-        handleServerError(err, next);
+        if (!res.headersSent) {
+          handleServerError(err, next);
+        }
       });
   });
 };
@@ -242,7 +268,7 @@ exports.getNewPassword = (req, res, next) => {
     resetTokenExpiration: { $gt: Date.now() },
   })
     .then((user) => {
-      let message = req.flash("error");
+      let message = req.flash('error');
       if (message.length > 0) {
         message = message[0];
       } else {
@@ -250,9 +276,9 @@ exports.getNewPassword = (req, res, next) => {
       }
       // console.log(message);
 
-      res.render("auth/new-password", {
-        path: "/users/new-password",
-        pageTitle: "New Password",
+      res.render('auth/new-password', {
+        path: '/users/new-password',
+        pageTitle: 'New Password',
         errorMessage: message,
         userId: user._id.toString(),
         passwordToken: token,
@@ -266,9 +292,7 @@ exports.getNewPassword = (req, res, next) => {
 
 exports.postNewPassword = (req, res, next) => {
   //new-password.ejs에서 name으로 password, userId라고 저장해놧음
-  const newPassword = req.body.password;
-  const userId = req.body.userId;
-  const passwordToken = req.body.passwordToken;
+  const { newPassword, userId, passwordToken } = req.body;
   let resetUser;
 
   User.findOne({
@@ -288,7 +312,7 @@ exports.postNewPassword = (req, res, next) => {
       return resetUser.save();
     })
     .then((result) => {
-      res.redirect("/users/login");
+      res.redirect('/users/login');
     })
     .catch((err) => {
       //        console.log(err);
